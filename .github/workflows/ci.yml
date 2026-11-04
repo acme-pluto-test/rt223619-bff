@@ -1,0 +1,46 @@
+name: ci
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+  id-token: write
+  security-events: write
+  packages: write
+  attestations: write
+  pull-requests: write
+  actions: read
+jobs:
+  verify:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/verify.yml@v1
+    with:
+      stack: kotlin-spring
+    secrets: inherit
+  test:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/test.yml@v1
+    with:
+      stack: kotlin-spring
+    secrets: inherit
+  contract:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/contract.yml@v1
+    with:
+      stack: kotlin-spring
+    secrets: inherit
+  security:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/security.yml@v1
+    with:
+      stack: kotlin-spring
+    secrets: inherit
+  package:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/package.yml@v1
+    with:
+      stack: kotlin-spring
+    secrets: inherit
+  check_proofs:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/check-proofs.yml@v1
+  validate_verification:
+    uses: acme-pluto-test/platform-workflows/.github/workflows/validate-verification.yml@v1
