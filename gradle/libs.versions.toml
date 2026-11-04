@@ -1,6 +1,6 @@
 # Door 1 of stack-pack-kotlin-spring: every version of the build is here, once.
 [versions]
-kotlin = "2.3.21"            # the version Spring Boot 4.1.2 manages
+kotlin = "2.4.21"            # the version Spring Boot 4.1.2 manages
 springBoot = "4.1.2"
 dependencyManagement = "1.1.7"
 openapiGenerator = "7.14.0"
