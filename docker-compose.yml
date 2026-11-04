@@ -1,0 +1,22 @@
+services:
+  floci:
+    image: floci/floci:2.3.0
+    ports:
+      - "${FLOCI_PORT:-4566}:4566"
+  app:
+    build: .
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      - floci
+    environment:
+      AWS_ENDPOINT_URL: http://floci:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      GREETINGS_BUCKET: greetings
+      TRANSLATOR_URL: http://localhost:9090
+      # Door 1 of reference-scenario: the service does not start without the token settings.
+      PLUTO_JWT_PUBLIC_KEY: ${PLUTO_JWT_PUBLIC_KEY:?set the PEM public key of your token issuer}
+      PLUTO_JWT_ISSUER: ${PLUTO_JWT_ISSUER:?set the issuer of your tokens}
+      PLUTO_JWT_AUDIENCE: ${PLUTO_JWT_AUDIENCE:?set the audience of your tokens}

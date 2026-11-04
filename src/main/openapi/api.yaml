@@ -1,0 +1,123 @@
+# Synced from <product>-contracts: the build generates the controller interface from this file. Do not edit it here.
+openapi: 3.0.3
+info:
+  title: Pluto template BFF
+  version: 1.0.0
+security:
+  - bearerAuth: []
+paths:
+  /v1/greetings/{name}:
+    get:
+      operationId: getGreeting
+      tags: [greetings]
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200":
+          description: The greeting
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Greeting" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400":
+          description: The name is not valid
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+  /v1/greetings/{name}/translations/{lang}:
+    get:
+      operationId: getTranslation
+      tags: [greetings]
+      parameters:
+        - $ref: "#/components/parameters/Name"
+        - name: lang
+          in: path
+          required: true
+          schema: { type: string, pattern: "^[a-z]{2}$" }
+      responses:
+        "200":
+          description: The greeting translated by the downstream service
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Greeting" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400":
+          description: The name or the language is not valid
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "502":
+          description: The downstream service is unavailable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "504":
+          description: The downstream service did not answer in time
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+  /v1/greetings/{name}/note:
+    get:
+      operationId: getNote
+      tags: [greetings]
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200":
+          description: The note stored for the name
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Note" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400":
+          description: The name is not valid
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "404":
+          description: There is no note for the name
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "502":
+          description: The store is unavailable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: No token, or a token that is expired, badly signed, or not for this service
+      headers:
+        WWW-Authenticate:
+          schema: { type: string, example: Bearer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+  parameters:
+    Name:
+      name: name
+      in: path
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 64, pattern: "^[A-Za-z0-9._-]+$" }
+  schemas:
+    Greeting:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    Note:
+      type: object
+      required: [text]
+      properties:
+        text: { type: string }
+    ApiError:
+      type: object
+      required: [code]
+      properties:
+        code: { type: string }
